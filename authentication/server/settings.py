@@ -10,23 +10,35 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
+
+import environ
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# env
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# make sure that your .env file is in your root directory
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ab3l=y(^32qm=y2kc^9)%ahelp*ipoo0=6duy*afai%_b8#1*@"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on(True) in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -60,7 +72,7 @@ ROOT_URLCONF = "server.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -79,12 +91,25 @@ WSGI_APPLICATION = "server.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# For sqlite3 database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# For PostgreSQL Database
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": env("DB_NAME"),
+#         "USER": env("DB_USER"),
+#         "PASSWORD": env("DB_PASSWORD"),
+#         "HOST": env("DB_HOST"),
+#         "PORT": env("DB_PORT"),
+#     }
+# }
 
 # JWT Configuration
 REST_FRAMEWORK = {
@@ -123,17 +148,21 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Root URLs
+ROOT_URLCONF = "server.urls"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Custom User Model
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 # JWT Settings
@@ -175,3 +204,23 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
+
+# Redirect urls
+LOGOUT_REDIRECT_URL = reverse_lazy("login")
+LOGIN_URL = reverse_lazy("login")
+
+# Session management
+SESSION_EXPIRE_AT_BROWSER_CLOSE = (
+    True  # optional, as this will log you out when browser is closed
+)
+SESSION_COOKIE_AGE = 300  # 0r 5 * 60, same thing
+SESSION_SAVE_EVERY_REQUEST = True  # Will prevent from logging you out after 300 seconds
+
+# Email Configuration
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", cast=bool)
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
