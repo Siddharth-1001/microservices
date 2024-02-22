@@ -158,14 +158,14 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
-/static/
-/media/
+/authentication/static/
+/authentication/media/
 
 /vm/
 
-/accounts/migrations/
+/authentication/accounts/migrations/
 
-/accounts/__pycache__/
-/accounts/migrations/__pycache__/
-/server\__pycache__/
+/authentication/accounts/__pycache__/
+/authentication/accounts/migrations/__pycache__/
+/authentication/server\__pycache__/
 
