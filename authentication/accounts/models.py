@@ -45,8 +45,6 @@ class CustomUserManager(BaseUserManager):
         user.is_superuser = True
         user.is_admin = True
         user.is_staff = True
-        user.is_student = True
-        user.is_parent = True
         user.save(using=self._db)
         return user
 
@@ -58,7 +56,7 @@ class CustomUser(AbstractBaseUser):
         unique=True,
     )
     username = models.CharField(max_length=30, null=True, blank=True)
-    user_hash = models.CharField(max_length=30, unique=True, default=uuid4())
+    user_hash = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone_number = models.CharField(
@@ -77,6 +75,7 @@ class CustomUser(AbstractBaseUser):
     blood_group = models.CharField(
         max_length=1, choices=BLOOD_GROUP_CHOICES, blank=True, null=True
     )
+    parents = models.ManyToManyField("CustomUser", blank=True, related_name="children")
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -108,12 +107,13 @@ class CustomUser(AbstractBaseUser):
         "Does the user have a specific permission?"
         # Check if the user has the specific permission
         # For example, "can_view_dashboard"
-        return self.is_admin or perm in self.user_permissions
+        return self.is_admin or self.is_superuser or super().has_perm(perm)
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
         # Check if the user has any permissions for the given app_label
         return (
             self.is_admin
+            or self.is_superuser
             or self.user_permissions.filter(content_type__app_label=app_label).exists()
         )

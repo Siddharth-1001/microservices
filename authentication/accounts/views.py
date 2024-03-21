@@ -29,7 +29,9 @@ class LoginView(View):
             email = request.POST.get("email")
             password = request.POST.get("password")
             if email and password:
-                user = authenticate(request=request, username=email, password=password)
+                user = authenticate(
+                    request=request, username=str(email).lower(), password=password
+                )
                 if user is not None:
                     if user.is_active:
                         login(request, user)
