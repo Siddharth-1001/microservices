@@ -42,6 +42,7 @@ class UserModelAdmin(BaseUserAdmin):
                     "is_admin",
                     "is_staff",
                     "is_student",
+                    "is_parent",
                 )
             },
         ),
