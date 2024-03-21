@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core import validators
 from django.db import models
 
-from .constant import GENDER_CHOICES
+from .constant import BLOOD_GROUP_CHOICES, GENDER_CHOICES
 
 
 class CustomUserManager(BaseUserManager):
@@ -44,7 +44,7 @@ class CustomUserManager(BaseUserManager):
         user.is_superuser = True
         user.is_admin = True
         user.is_staff = True
-        user.is_employee = True
+        user.is_student = True
         user.save(using=self._db)
         return user
 
@@ -72,11 +72,14 @@ class CustomUser(AbstractBaseUser):
         max_length=1, choices=GENDER_CHOICES, null=True, blank=True
     )
     date_of_birth = models.DateField(null=True, blank=True)
+    blood_group = models.CharField(
+        max_length=1, choices=BLOOD_GROUP_CHOICES, blank=True, null=True
+    )
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_employee = models.BooleanField(default=False)
+    is_student = models.BooleanField(default=False)
     city = models.CharField(max_length=30, null=True, blank=True)
     state = models.CharField(max_length=30, null=True, blank=True)
     country = models.CharField(max_length=30, null=True, blank=True)

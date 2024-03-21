@@ -31,6 +31,9 @@ class CustomUserCreationForm(forms.ModelForm):
             "password2": forms.PasswordInput(),
         }
 
+    def clean_email(self):
+        return self.cleaned_data["email"].lower()
+
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
@@ -40,6 +43,7 @@ class CustomUserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.email = self.cleaned_data["email"].lower()
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()

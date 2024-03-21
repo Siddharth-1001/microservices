@@ -28,6 +28,7 @@ class UserModelAdmin(BaseUserAdmin):
                     "phone_number",
                     "gender",
                     "date_of_birth",
+                    "blood_group"
                 )
             },
         ),
@@ -40,7 +41,7 @@ class UserModelAdmin(BaseUserAdmin):
                     "is_superuser",
                     "is_admin",
                     "is_staff",
-                    "is_employee",
+                    "is_student",
                 )
             },
         ),
