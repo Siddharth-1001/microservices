@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select User Type</title>
+</head>
+<body>
+    <h2>Select User Type</h2>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Submit</button>
+    </form>
+    <hr>
+    <p>
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+    </p>
+</body>
+</html>

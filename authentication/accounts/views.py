@@ -1,19 +1,48 @@
+from django import forms
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, SelectUserTypeForm
+from .models import CustomUser
 
 USER = get_user_model()
+
+
+class UserTypeView(FormView):
+    template_name = "accounts/user_type.html"
+    form_class = SelectUserTypeForm
+    success_url = reverse_lazy("registration")
+
+    def form_valid(self, form):
+        # Process the data in form.cleaned_data
+        # For example, you might save the user type to the session
+        self.request.session["user_type"] = form.cleaned_data["select_type"]
+        return super().form_valid(form)
 
 
 class UserRegistrationView(CreateView):
     template_name = "accounts/registration.html"
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user_type = self.request.session.get("user_type")
+        if user_type == "0" and CustomUser.objects.filter(is_parent=True).exists():
+            queryset = CustomUser.objects.filter(is_parent=True)
+            choices = [("", "Select Parent")] + list(
+                queryset.values_list("id", "email")
+            )
+            form.fields["parent_user"] = forms.ChoiceField(
+                choices=choices,
+                label="Select Parent",
+                required=True,
+            )
+        return form
 
 
 class LoginView(View):

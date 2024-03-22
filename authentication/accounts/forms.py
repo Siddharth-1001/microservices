@@ -1,6 +1,13 @@
 from django import forms
 
+from .constant import USER_TYPE_CHOICES
 from .models import CustomUser
+
+
+class SelectUserTypeForm(forms.Form):
+    select_type = forms.ChoiceField(
+        label="User Type", required=True, choices=USER_TYPE_CHOICES
+    )
 
 
 class CustomUserCreationForm(forms.ModelForm):
@@ -47,4 +54,8 @@ class CustomUserCreationForm(forms.ModelForm):
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
+            parent_user_id = self.cleaned_data.get("parent_user")
+            if parent_user_id:
+                parent_user = CustomUser.objects.get(pk=parent_user_id)
+                user.parents.add(parent_user)
         return user

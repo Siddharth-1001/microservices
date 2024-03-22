@@ -1,9 +1,10 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from .views import LoginView, UserRegistrationView
+from .views import LoginView, UserRegistrationView, UserTypeView
 
 urlpatterns = [
+    path("user_type/", UserTypeView.as_view(), name="user_type"),
     path("registration/", UserRegistrationView.as_view(), name="registration"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
